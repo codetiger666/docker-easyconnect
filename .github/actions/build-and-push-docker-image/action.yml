@@ -54,46 +54,12 @@ runs:
         esac
 
         build() {
-          docker-build --platform "$1" -t hagb/docker-easyconnect:build $(cat build-args/7.6.7-"$1".txt) -f Dockerfile.build .
-          if [ -e build-args/atrust-"$1".txt ]; then
-            docker-build --platform "$1" -t hagb/docker-easyconnect:build $(cat build-args/atrust-"$1".txt) -f Dockerfile.build .
-            docker-build --platform "$1" -t ${{ inputs.atrust_image_name }}:$(to-tag $prefix $1) $(cat build-args/atrust-"$1".txt) -f Dockerfile .
-            docker-build --platform "$1" -t ${{ inputs.atrust_image_name }}:$(to-tag $prefix vncless $1) $(cat build-args/atrust-"$1".txt) -f Dockerfile.vncless .
-          fi
-          if [ amd64 = "$1" ]; then
-            docker-build -t ${{ inputs.ec_image_name }}:$(to-tag $prefix cli) -f Dockerfile.cli .
-          fi
-        }
-
-        build amd64
-
-        docker image rm hagb/docker-easyconnect:build
+          docker image build --build-arg VPN_TYPE=ATRUST -f Dockerfile.build -t hagb/docker-easyconnect:build .
+          docker image build --build-arg VPN_URL=https://atrustcdn.sangfor.com/standard/linux/2.5.10.32/uos/arm64/aTrustInstaller_arm64.deb --build-arg VPN_TYPE=ATRUST --tag codetiger666/docker-atrust:1.0 -f Dockerfile .
 
     - name: Push Docker image
       shell: bash
       run: |
-        to-tag() {
-          IFS=-
-          tag="$(printf %s "$*")"
-          if [ -n "$tag" ]; then
-            printf %s "$tag"
-          else
-            echo latest
-          fi
-        }
-        branch="$(git branch --show-current)"
-        case "$branch" in
-          master)
-            prefix=
-            ;;
-          develop)
-            prefix=dev
-            ;;
-          *)
-            prefix="$branch"
-            ;;
-        esac
-
         token="$( curl -sH "Content-Type: application/json" \
                     -X POST -d "{\"username\": \"${{ inputs.registry_username }}\", \"password\": \"${{ inputs.registry_password }}\"}" \
                     https://hub.docker.com/v2/users/login/ |
@@ -103,6 +69,6 @@ runs:
                   https://hub.docker.com/v2/repositories/$1/tags/$2/
         }
         
-        docker push --all-tags ${{ inputs.atrust_image_name }}
+        docker push codetiger666/docker-atrust:1.0
 
         
