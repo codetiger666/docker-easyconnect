@@ -10,11 +10,11 @@ inputs:
   ec_image_name:
     description: 'Name of the easyconnect image to push'
     required: true
-    default: 'hagb/docker-easyconnect'
+    default: 'codetiger666/docker-easyconnect'
   atrust_image_name:
     description: 'Name of the atrust image to push'
     required: true
-    default: 'hagb/docker-atrust'
+    default: 'codetiger666/docker-atrust'
   archs:
     description: 'Archs of the easyconnect image to push'
     required: true
