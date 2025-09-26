@@ -34,29 +34,9 @@ runs:
     - name: Build Docker image
       shell: bash
       run: |
-        to-tag() {
-          tag="$( IFS=-; printf %s "$*"; )"
-          if [ -n "$tag" ]; then
-            printf %s "$tag"
-          else
-            echo latest
-          fi
-        }
-        docker-build() {
-          #docker pull $1
-          docker buildx build --build-arg BUILD_ENV=actions "$@"
-        }
-        branch="$(git branch --show-current)"
-        case "$branch" in
-          master) prefix= ;;
-          develop) prefix=dev ;;
-          *) prefix="$branch" ;;
-        esac
-
-        build() {
-          docker image build --build-arg VPN_TYPE=ATRUST -f Dockerfile.build -t hagb/docker-easyconnect:build .
-          docker image build --build-arg VPN_URL=https://atrustcdn.sangfor.com/standard/linux/2.5.10.32/uos/arm64/aTrustInstaller_arm64.deb --build-arg VPN_TYPE=ATRUST --tag codetiger666/docker-atrust:1.0 -f Dockerfile .
-
+        docker image build --build-arg VPN_TYPE=ATRUST -f Dockerfile.build -t hagb/docker-easyconnect:build .
+        docker image build --build-arg VPN_URL=https://atrustcdn.sangfor.com/standard/linux/2.5.10.32/uos/arm64/aTrustInstaller_arm64.deb --build-arg VPN_TYPE=ATRUST --tag codetiger666/docker-atrust:1.0 -f Dockerfile .
+        
     - name: Push Docker image
       shell: bash
       run: |
