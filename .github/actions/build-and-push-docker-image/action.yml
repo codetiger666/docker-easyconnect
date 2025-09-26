@@ -54,6 +54,7 @@ runs:
         esac
 
         build() {
+          docker-build --platform "$1" -t hagb/docker-easyconnect:build $(cat build-args/7.6.7-"$1".txt) -f Dockerfile.build .
           if [ -e build-args/atrust-"$1".txt ]; then
             docker-build --platform "$1" -t hagb/docker-easyconnect:build $(cat build-args/atrust-"$1".txt) -f Dockerfile.build .
             docker-build --platform "$1" -t ${{ inputs.atrust_image_name }}:$(to-tag $prefix $1) $(cat build-args/atrust-"$1".txt) -f Dockerfile .
